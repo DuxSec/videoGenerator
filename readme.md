@@ -3,10 +3,12 @@ Short 'quote' video generator for whatever platform you use. (reels, shorts, tik
 - Generate unlimited video's
 - All songs are from youtube's free music library for commercial use.
 - Uses minimal resources
+- 4500+ Quotes included
 
 Todo:
 - Add openAPI custom support (title/description generation)
 - Selenium uploading to youtube
+- Quote scraping from API
 - CLI with options (api key, easy file configurations)
 - GUI
 
