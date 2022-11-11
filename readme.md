@@ -2,7 +2,6 @@ Short 'quote' video generator for whatever platform you use. (reels, shorts, tik
 
 - Generate unlimited video's
 - All songs are from youtube's free music library for commercial use.
-- Uses minimal resources
 - 4500+ Quotes included
 
 Todo:
@@ -11,6 +10,8 @@ Todo:
 - Quote scraping from API
 - CLI with options (api key, easy file configurations)
 - GUI
+
+(This GitHub version has automatic intro's enabled)
 
 Example output video with automatic into:
 https://www.youtube.com/shorts/JCElumu8KZ8
