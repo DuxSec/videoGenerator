@@ -1,6 +1,13 @@
 Video generator for whatever platform you use.
 
-You need to make a .env containing:
+- All songs are from youtube's free music library for commercial use.
+
+Example output video:
+https://youtube.com/shorts/j-xkH3DrD9k
+
+
+## Setup
+You need to make a .env file containing:
 ```PEXELS_API_KEY = 'YOUR API KEY'```
 
 Example:
@@ -13,5 +20,4 @@ if __name__ == "__main__"
 ```
 change the 1 to whatever you want.
 
-Example output video:
-https://youtube.com/shorts/j-xkH3DrD9k
+
