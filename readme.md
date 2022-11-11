@@ -1,4 +1,4 @@
-Short video generator for whatever platform you use. (reels, shorts, tiktok)
+Short 'quote' video generator for whatever platform you use. (reels, shorts, tiktok)
 
 - Generate unlimited video's
 - All songs are from youtube's free music library for commercial use.
