@@ -197,7 +197,8 @@ if __name__ == "__main__":
         deleteFirstLineInTxt() # remove the quote from quotes.txt
         mp3 = makeMp3(quoteText) # make mp3 and save as: speech.mp3
         bgMusic = randomBgMusic()
-        createVideo(mp3, quoteText,bgMusic, bgVideo, i) # createVideo(quoteMp3,bgMusic,bgVideo)
+        # createVideo(mp3, quoteText,bgMusic, bgVideo, i) # createVideo(quoteMp3,bgMusic,bgVideo)
+        createVideo(quoteText,bgMusic, bgVideo, i) # createVideo(quoteMp3,bgMusic,bgVideo)
         print("finished! video: ", i)
     
 
