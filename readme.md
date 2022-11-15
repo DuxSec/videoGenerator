@@ -9,7 +9,7 @@ Todo: ✅ = done
 - Add openAI custom support (title/description generation)
 - Selenium uploading to youtube
 - Quote scraping from API
-✅ CLI with options (api key, easy file configurations)
+- ✅ CLI with options (api key, easy file configurations)
 - GUI
 
 Example output video with automatic into:
@@ -20,16 +20,19 @@ https://youtube.com/shorts/j-xkH3DrD9k
 
 
 ## Setup
-Show help menu
-```python3 main.py -h```
 
-`-h` show help menu
 Required arguments:
-`-a` amount of videos to create
-`-k` your Pexels API key
+- `-a` amount of videos to create
+- `-k` your Pexels API key
 
 Optional arguments:
-`-tts` enable TTS for quote text (default is OFF)
+- `-tts` enable TTS for quote text (default is OFF)
+
+
+### example 0:
+```python3 main.py -h```
+
+Displays the help menu
 
 ### example 1:
 ```python3 main.py -a 5 -k 3534323a6f9324345100205454ba4cdac2e35c2d8e43434323230a```
