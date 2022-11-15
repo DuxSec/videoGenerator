@@ -1,4 +1,4 @@
-from pydantic import env_settings
+# from pydantic import env_settings
 import requests
 import json 
 import gtts
@@ -8,15 +8,16 @@ from tqdm.auto import tqdm
 from moviepy.editor import *
 import os
 import glob
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
+import argparse
 
-load_dotenv() #load .env
+# load_dotenv() #load .env
 
-PEXELS_API_KEY = os.getenv('PEXELS_API_KEY') #add your api key in .ENV
-
-
+# PEXELS_API_KEY = os.getenv('PEXELS_API_KEY') #add your api key in .ENV
+# AMOUNT_OF_VIDEOS_TO_MAKE = None
+# TTS_ENABLED = False
 
 # download background video from pexels - https://www.pexels.com/api/documentation/#videos-search__parameters
 def downloadVideo(id) -> str:
@@ -39,7 +40,7 @@ def downloadVideo(id) -> str:
 
         
 
-def scrapeVideos():
+def scrapeVideos(pexelsApiKey: str):
     """Scrapes video's from PEXELS about nature in portrait mode with API key"""
     print("scrapeVideos()")
     parameters = {
@@ -49,10 +50,20 @@ def scrapeVideos():
     }
     try:
         pexels_auth_header = {
-            'Authorization' : PEXELS_API_KEY
+            'Authorization' : pexelsApiKey
         }
-        print("trying to request page..")
-        resp = requests.get("https://api.pexels.com/videos/search",headers=pexels_auth_header, params=parameters)
+        print("Trying to request Pexels page with your api key")
+        resp = requests.get("https://api.pexels.com/videos/search", headers=pexels_auth_header, params=parameters)
+        statusCode = resp.status_code
+        if statusCode != 200:
+            if statusCode == 429:
+                print(f"""You sent too many requests(you have exceeded your rate limit)!\n 
+                The Pexels API is rate-limited to 200 requests per hour and 20,000 requests per month (https://www.pexels.com/api/documentation/#introduction).\n
+                Returned status code: {statusCode}""")
+            else:
+                print(f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
+            print("Exiting...!")
+            exit()
     except:
         print("Error in request.get....!??")
     data = json.loads(resp.text)
@@ -75,8 +86,6 @@ def usedQuoteToDifferentFile():
     with open('quotes/usedQuotes.txt', 'a') as file:
         file.write(quote)
 
-
-    
 
 def getQuote():
     """Get 1 quote from the text file"""
@@ -114,28 +123,28 @@ def videoIntro(introText, videoNumber) -> CompositeVideoClip:
     intro_final = CompositeVideoClip([intro_clip, text_with_bg]).set_duration(intro_clip_duration)
     return intro_final
 
-def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int):
+def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int, ttsAudio: bool):
     """Creates the entire video with everything together - this should be split up in different methods"""
     introText = ['A quote about never giving up on your dreams','A quote about being yourself','A quote about believing in yourself','A quote about making your dreams come true','A quote about happiness','A quote to remind you to stay positive','A quote about never giving up', 'A quote about being grateful', 'A quote about taking risks', 'A quote about living your best life']
-    print("Introtext we will use: ", introText[videoNumber])
+    print(f"Introtext we will use: {introText[videoNumber]}")
     intro_final = videoIntro(introText, videoNumber)
 
     quoteArray = []
     quoteArray.append(quoteText)
     totalTTSTime = 0
     completedVideoParts = []
-    ttsAudio = False
+
+    print(f"Going to create a total of {len(quoteArray)} 'main' clips")
     for idx, sentence in enumerate(quoteArray):
         #create the audio
-        save_as = "temp_audio_" + str(idx) + ".mp3"
+        save_as = f"tempFiles/temp_audio_{str(idx)}.mp3"
         tts = gtts.gTTS(sentence, lang='en', tld='ca')
         #save audio
         tts.save(save_as)
         audio = MP3(save_as)
         time = audio.info.length
         totalTTSTime += time
-        #print audio length
-        print("Mp3 ", str(idx), " has audio length: ",time)
+        print(f"Mp3 {str(idx)} has audio length: {time} ")
 
         #createTheClip with the according text
         text_clip = TextClip(
@@ -157,35 +166,39 @@ def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int):
         audio_clip = AudioFileClip(save_as)
         new_audioclip = CompositeAudioClip([audio_clip])
         text_together.audio = new_audioclip
-        text_together.fps = 24 #delete this line ??
         completedVideoParts.append(text_together)
-
-        # if os.path.exists(save_as):
-        #     os.remove(save_as)
-        # else:
-        #     print("Can't find the MP3 file so we did NOT delete it!!")
 
     combined_quote_text_with_audio = concatenate_videoclips(completedVideoParts).set_position('center') 
     combined_quote_text_with_audio.set_position('center')
 
     #calculate total time
-    #total_video_time = intro_clip_duration + totalTTSTime
     total_video_time = intro_final.duration + totalTTSTime
     background_clip = VideoFileClip(bgVideo).resize((1080,1920))
-    
     final_export_video = CompositeVideoClip([background_clip, combined_quote_text_with_audio]).subclip(0, totalTTSTime)
+
     #Set audio
-    audio_clip = AudioFileClip(bgMusic)
-    #change the audio under here...
-    new_audioclip = CompositeAudioClip([
-        audio_clip, 
-        #final_export_video.audio.set_start(intro_clip_duration) #uncomment to get TTS audio
-        ]).subclip(0,total_video_time)
+    backgroundMusic = AudioFileClip(bgMusic)
+    totalAudio = audioClip(ttsAudio, backgroundMusic, final_export_video, total_video_time, intro_final.duration)
 
     final = concatenate_videoclips([intro_final, final_export_video])
-    final.audio = new_audioclip
-
+    final.audio = totalAudio
     final.write_videofile("VID_" + str(videoNumber) + ".mp4", threads=12)
+
+def audioClip(ttsAudio: bool, backgroundMusic, final_export_video, total_video_time, introDuration: int) -> CompositeAudioClip:
+    """Makes the audioclip for the entire video, ttsAudio is the boolean that the user sets (yes/no TTS in the quotetext)"""
+    new_audioclip = None
+    if ttsAudio:
+        new_audioclip = CompositeAudioClip([
+            backgroundMusic, 
+            final_export_video.audio.set_start(introDuration) #uncomment to get TTS audio -> goes to else
+            ]).subclip(0,total_video_time)
+    else:
+        new_audioclip = CompositeAudioClip([
+        backgroundMusic, 
+        ]).subclip(0,total_video_time)
+    return new_audioclip
+
+
 
 def randomBgMusic():
     """Get a random 'sad' song from the sad_music folder"""
@@ -206,8 +219,8 @@ def cleanUpAfterVideoFinished():
     usedQuoteToDifferentFile()
     # deleteTempFiles()
 
-def getBackgroundVideo() -> str:
-    scrapedVideosJson = scrapeVideos()
+def getBackgroundVideo(pexelsApiKey) -> str:
+    scrapedVideosJson = scrapeVideos(pexelsApiKey)
     videoArray = scrapedVideosJson['videos']
     randomVideoToScrape = random.randint(0, len(videoArray)-1)
     videoId = videoArray[randomVideoToScrape]['id']
@@ -215,17 +228,55 @@ def getBackgroundVideo() -> str:
     bgVideo = downloadVideo(videoId)
     return bgVideo
 
-if __name__ == "__main__":
+def mainVideoLoop(parsedArgs):
     """Make X amount of videos."""
-    for i in range(1): #amount of videos to generate
-        bgVideo = getBackgroundVideo()
+    for i in range(parsedArgs.amount_of_videos): #amount of videos to generate
+        bgVideo = getBackgroundVideo(parsedArgs.pexels_api_key)
         quoteText = getQuote()
         # mp3 = makeMp3(quoteText) # make mp3 and save as: speech.mp3
         bgMusic = randomBgMusic()
-        #createVideo(mp3, quoteText,bgMusic, bgVideo, i) # createVideo(quoteMp3,bgMusic,bgVideo)
-        createVideo(quoteText, bgMusic, bgVideo, i) # createVideo(quoteMp3,bgMusic,bgVideo)
+        ttsAudio = True
+        createVideo(quoteText, bgMusic, bgVideo, i, ttsAudio)
         cleanUpAfterVideoFinished()
         print("finished! video: ", i)
+
+def parseCLIargs():
+    my_parser = argparse.ArgumentParser(description="""
+    Help section of video generator
+    """)
+
+    #required args
+    required = my_parser.add_argument_group('Required arguments')
+    required.add_argument('-a', '--amount-of-videos',
+                        help='The amount of videos to generate. Example: 5',
+                        type=int,
+                        required=True,
+                        metavar='')
+
+    required.add_argument('-p', '--pexels-api-key',
+                        help='Your pexels API key, for downloading background videos',
+                        type=str,
+                        required=True,
+                        metavar='')
+
+    #optional args
+    optional = my_parser.add_argument_group('Optional arguments')
+
+    optional.add_argument('-tts', '--tts-enabled',
+                            help='Enables TTS audio for the quote, default is OFF',
+                            action='store_true',
+                        )
+
+
+    # Execute parse_args()
+    parsedArgs = my_parser.parse_args()
+    return parsedArgs
+
+    print('ALL ARGUMENTS PROVIDED CORRECTLY')
+
+if __name__ == "__main__":
+    parsedArgs = parseCLIargs()
+    mainVideoLoop(parsedArgs)
     
 
 
