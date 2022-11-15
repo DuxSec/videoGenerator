@@ -4,14 +4,13 @@ Short 'quote' video generator for whatever platform you use. (reels, shorts, tik
 - All songs are from youtube's free music library for commercial use.
 - 4500+ Quotes included
 
-Todo:
-- Add openAPI custom support (title/description generation)
+
+Todo: ✅ = done
+- Add openAI custom support (title/description generation)
 - Selenium uploading to youtube
 - Quote scraping from API
-- CLI with options (api key, easy file configurations)
+✅ CLI with options (api key, easy file configurations)
 - GUI
-
-(This GitHub version has automatic intro's enabled)
 
 Example output video with automatic into:
 https://www.youtube.com/shorts/JCElumu8KZ8
@@ -21,17 +20,26 @@ https://youtube.com/shorts/j-xkH3DrD9k
 
 
 ## Setup
-You need to make a .env file containing:
-```PEXELS_API_KEY = 'YOUR API KEY'```
+Show help menu
+```python3 main.py -h```
 
-Example:
-```PEXELS_API_KEY = '3534323a6f9324345100205454ba4cdac2e35c2d8e43434323230a'```
+`-h` show help menu
+Required arguments:
+`-a` amount of videos to create
+`-k` your Pexels API key
 
-Change the amount of videos to generate in method 
-```python
-if __name__ == "__main__" 
-  for i in range(1): 
-```
-change the 1 to whatever you want.
+Optional arguments:
+`-tts` enable TTS for quote text (default is OFF)
+
+### example 1:
+```python3 main.py -a 5 -k 3534323a6f9324345100205454ba4cdac2e35c2d8e43434323230a```
+Generates 5 videos
+
+### example 2:
+```python3 main.py -tts -a 5 -k 3534323a6f9324345100205454ba4cdac2e35c2d8e43434323230a```
+Generates 5 videos with text to speech enabled for the 'quote' part (no text to speech for intro)
+
+
+
 
 
