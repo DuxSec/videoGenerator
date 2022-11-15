@@ -5,12 +5,12 @@ Short 'quote' video generator for whatever platform you use. (reels, shorts, tik
 - 4500+ Quotes included
 
 
-Todo: ✅ = done
-- Add openAI custom support (title/description generation)
-- Selenium uploading to youtube
-- Quote scraping from API
+Todo: ✅ = done ❌ = not done yet
+- ❌ Add openAI custom support (title/description generation)
+- ❌ Selenium uploading to youtube
+- ❌ Quote scraping from API
 - ✅ CLI with options (api key, easy file configurations)
-- GUI
+- ❌ GUI
 
 Example output video with automatic into:
 https://www.youtube.com/shorts/JCElumu8KZ8
