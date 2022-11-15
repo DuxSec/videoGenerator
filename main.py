@@ -1,4 +1,3 @@
-# from pydantic import env_settings
 import requests
 import json 
 import gtts
@@ -8,18 +7,8 @@ from tqdm.auto import tqdm
 from moviepy.editor import *
 import os
 import glob
-# from dotenv import load_dotenv
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
-import argparse
-from pathlib import Path
-import yaml
-
-# load_dotenv() #load .env
-
-# PEXELS_API_KEY = os.getenv('PEXELS_API_KEY') #add your api key in .ENV
-# AMOUNT_OF_VIDEOS_TO_MAKE = None
-# TTS_ENABLED = False
 
 # download background video from pexels - https://www.pexels.com/api/documentation/#videos-search__parameters
 def downloadVideo(id) -> str:
