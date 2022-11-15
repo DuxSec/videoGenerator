@@ -21,6 +21,7 @@ https://youtube.com/shorts/j-xkH3DrD9k
 
 ## Setup
 Install requirements.txt
+
 Normal pip
 
 ```pip install -r requirements.txt```
