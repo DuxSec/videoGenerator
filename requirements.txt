@@ -1,0 +1,5 @@
+gTTS==2.2.4
+moviepy==1.0.3
+mutagen==1.46.0
+requests==2.28.1
+tqdm==4.64.1
