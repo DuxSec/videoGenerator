@@ -65,19 +65,19 @@ def scrapeVideos(pexelsApiKey: str):
             else:
                 print(f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
             print("Exiting...!")
-            quit()
+            return None
     except:
         print("Error in request.get....!??")
-        quit()
+        return None
     try:
         data = json.loads(resp.text)
         results = data['total_results']
     except:
         print("Error in pexels json data ?")
-        quit()
+        return None
     if results == 0:
         print("No video results for your query: ", parameters['query'],"\nExiting..." )
-        quit()
+        return None
     return data
 
 def usedQuoteToDifferentFile():
@@ -227,7 +227,10 @@ def cleanUpAfterVideoFinished():
     # deleteTempFiles()
 
 def getBackgroundVideo(pexelsApiKey) -> str:
+    
     scrapedVideosJson = scrapeVideos(pexelsApiKey)
+    if scrapedVideosJson is None:
+        return None
     videoArray = scrapedVideosJson['videos']
     randomVideoToScrape = random.randint(0, len(videoArray)-1)
     videoId = videoArray[randomVideoToScrape]['id']
@@ -239,6 +242,8 @@ def mainVideoLoop(data):
     """Make X amount of videos."""
     for i in range(int(data['amountOfVideosToMake'])): #amount of videos to generate
         bgVideo = getBackgroundVideo(data['pexelsAPIKey'])
+        if bgVideo is None:
+            return None
         quoteText = getQuote()
         # mp3 = makeMp3(quoteText) # make mp3 and save as: speech.mp3
         bgMusic = randomBgMusic()
@@ -246,6 +251,7 @@ def mainVideoLoop(data):
         createVideo(quoteText, bgMusic, bgVideo, i, ttsAudio)
         cleanUpAfterVideoFinished()
         print("finished! video: ", i)
+        return True
 
 
 def changeJsonValue(question, data, dataString):
@@ -322,8 +328,12 @@ Options menu:
                 changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
             case 3:
                 verifyData(data)
-                mainVideoLoop(data)
-                changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
+                videoloop = mainVideoLoop(data)
+                if videoloop:
+                    changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
+                else:
+                    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
+                    input("Press enter to continue to the main screen")
             case 4:
                 print("Exiting...")
                 quit()
