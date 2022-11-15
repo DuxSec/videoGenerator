@@ -12,6 +12,8 @@ import glob
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
 import argparse
+from pathlib import Path
+import yaml
 
 # load_dotenv() #load .env
 
@@ -63,14 +65,19 @@ def scrapeVideos(pexelsApiKey: str):
             else:
                 print(f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
             print("Exiting...!")
-            exit()
+            quit()
     except:
         print("Error in request.get....!??")
-    data = json.loads(resp.text)
-    results = data['total_results']
+        quit()
+    try:
+        data = json.loads(resp.text)
+        results = data['total_results']
+    except:
+        print("Error in pexels json data ?")
+        quit()
     if results == 0:
         print("No video results for your query: ", parameters['query'],"\nExiting..." )
-        exit()
+        quit()
     return data
 
 def usedQuoteToDifferentFile():
@@ -228,10 +235,10 @@ def getBackgroundVideo(pexelsApiKey) -> str:
     bgVideo = downloadVideo(videoId)
     return bgVideo
 
-def mainVideoLoop(parsedArgs):
+def mainVideoLoop(data):
     """Make X amount of videos."""
-    for i in range(parsedArgs.amount_of_videos): #amount of videos to generate
-        bgVideo = getBackgroundVideo(parsedArgs.pexels_api_key)
+    for i in range(int(data['amountOfVideosToMake'])): #amount of videos to generate
+        bgVideo = getBackgroundVideo(data['pexelsAPIKey'])
         quoteText = getQuote()
         # mp3 = makeMp3(quoteText) # make mp3 and save as: speech.mp3
         bgMusic = randomBgMusic()
@@ -240,43 +247,88 @@ def mainVideoLoop(parsedArgs):
         cleanUpAfterVideoFinished()
         print("finished! video: ", i)
 
-def parseCLIargs():
-    my_parser = argparse.ArgumentParser(description="""
-    Help section of video generator
-    """)
 
-    #required args
-    required = my_parser.add_argument_group('Required arguments')
-    required.add_argument('-a', '--amount-of-videos',
-                        help='The amount of videos to generate. Example: 5',
-                        type=int,
-                        required=True,
-                        metavar='')
+def changeJsonValue(question, data, dataString):
+    user_input = input(question)
+    data[dataString] = user_input
+    with open('config.json', 'w') as f:
+        json.dump(data, f, ensure_ascii=False, indent = 4, sort_keys=True)
 
-    required.add_argument('-p', '--pexels-api-key',
-                        help='Your pexels API key, for downloading background videos',
-                        type=str,
-                        required=True,
-                        metavar='')
-
-    #optional args
-    optional = my_parser.add_argument_group('Optional arguments')
-
-    optional.add_argument('-tts', '--tts-enabled',
-                            help='Enables TTS audio for the quote, default is OFF',
-                            action='store_true',
-                        )
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 
-    # Execute parse_args()
-    parsedArgs = my_parser.parse_args()
-    return parsedArgs
 
-    print('ALL ARGUMENTS PROVIDED CORRECTLY')
+def verifyData(data):
+    """Verify amount of videos to make and pexelsAPI (does 1 request via scrapeVideo's method)"""
+    print("Checking data....")
+    if int(data['amountOfVideosToMake']) < 1:
+        print("Amount of videos to create is smaller then 1.\nExiting...")
+        quit()
+    scrapeVideos(data['pexelsAPIKey'])
+    print("Everything went well! Starting to create videos now!")
+
+
+
 
 if __name__ == "__main__":
-    parsedArgs = parseCLIargs()
-    mainVideoLoop(parsedArgs)
+    changes = ""
+
+    while True:
+        with open('config.json', 'r') as file:
+            data = json.load(file)
+        os.system('cls' if os.name=='nt' else 'clear')
+        loopPrint = (f"""{bcolors.HEADER}
+        
+    /__/|__                                                            __//|
+    |__|/_/|__                 Video generator v1.0.0                _/_|_||
+    |_|___|/_/|__                     fabbree                     __/_|___||
+    |___|____|/_/|__                                           __/_|____|_||
+    |_|___|_____|/_/|_________________________________________/_|_____|___||
+    |___|___|__|___|/__/___/___/___/___/___/___/___/___/___/_|_____|____|_||
+    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___||
+    |___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|_||
+    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|/{bcolors.ENDC}
+
+                {bcolors.OKGREEN}   {changes}{bcolors.ENDC}
+
+Current configurations:
+    Your Pexels API key: {bcolors.WARNING}{data['pexelsAPIKey']}{bcolors.ENDC}
+    Amount of videos to create: {bcolors.WARNING}{data['amountOfVideosToMake']}{bcolors.ENDC}
+    
+Options menu:
+    1) Change amount of videos to create
+    2) Change Pexels API key
+    3) Start generating videos
+    4) Exit
+
+    Enter your choice: """)
+        choice = input(loopPrint)
+        changes = ""
+        match int(choice):
+            case 1:
+                changeJsonValue("Amount of videos to create: ", data, 'amountOfVideosToMake')
+                changes = "updated video's to create successfully"
+            case 2:    
+                changeJsonValue("Your Pexels API key: ", data, 'pexelsAPIKey')
+                changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
+            case 3:
+                verifyData(data)
+                mainVideoLoop(data)
+                changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
+            case 4:
+                print("Exiting...")
+                quit()
+            case _:
+                print("Invalid option! Example input: 1")
     
 
 
