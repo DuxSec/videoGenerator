@@ -273,6 +273,11 @@ def verifyData(data):
     print("Everything went well! Starting to create videos now!")
 
 
+def launchImageMagicksInstaller():
+    print("Launching installer...")
+    print("In the installer, make sure to select this option(3rd screen):\nlegacy utilities(e.g. Convert)")
+    subprocess.run(['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
+
 def checkIfImageMagicksIsInstalled():
     result = subprocess.run(['magick', 'identify', '--version'], stdout=subprocess.PIPE)
     terminalOutput = str(result.stdout)
@@ -286,15 +291,16 @@ def checkIfImageMagicksIsInstalled():
             return True
         except:
             print("You did not install ImageMagicks with legacy utilities(e.g. Convert)!\nRerun the installation with this option enabled.")
+            x = input("Do you want to reinstall ImageMagicks? (yes/no)")
+            if "yes" in x:
+                launchImageMagicksInstaller()
             return False
     else:
         print("ImageMagick installation is not found!")
-        print("Do you want to install ImageMagick?")
+        print("Do you want to install ImageMagicks? (yes/no)")
         x = input("yes or no: ")
         if "yes" in x:
-            print("Launching installer...")
-            print("In the installer, make sure to select this option(3rd screen):\nlegacy utilities(e.g. Convert)")
-            subprocess.run(['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
+            launchImageMagicksInstaller()
         return False        
 
 if __name__ == "__main__":
