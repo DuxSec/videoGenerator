@@ -275,33 +275,37 @@ def verifyData(data):
 
 def launchImageMagicksInstaller():
     print("Launching installer...")
-    print("In the installer, make sure to select this option(3rd screen):\nlegacy utilities(e.g. Convert)")
+    print("In the installer, make sure to select this option(3rd screen):{bcolors.WARNING}legacy utilities(e.g. Convert){bcolors.ENDC}")
     subprocess.run(['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
 
 def checkIfImageMagicksIsInstalled():
-    result = subprocess.run(['magick', 'identify', '--version'], stdout=subprocess.PIPE)
-    terminalOutput = str(result.stdout)
-    # print(x)
+    terminalOutput = ""
+    try:
+        result = subprocess.run(['magick', 'identify', '--version'], stdout=subprocess.PIPE)
+        terminalOutput = str(result.stdout)
+    except FileNotFoundError:
+        print("ImageMagick installation is not found!")
     if "ImageMagick" in terminalOutput:
         print("ImageMagicks installation is found")
         print("Checking if you selected 'Install legacy utilities(e.g. Convert)' ")
         try:
             TextClip(txt="text") #trying to make a textclip
-            print("ImageMagicks seems be be installed correctly for use :)")
-            return True
+            print(f"{bcolors.OKGREEN}ImageMagicks is installed correctly{changes}{bcolors.ENDC}")
+            return
         except:
-            print("You did not install ImageMagicks with legacy utilities(e.g. Convert)!\nRerun the installation with this option enabled.")
+            print(f"You did not install ImageMagicks with {bcolors.WARNING}legacy utilities(e.g. Convert){bcolors.ENDC}!\nRerun the installation with this option enabled.")
             x = input("Do you want to reinstall ImageMagicks? (yes/no)")
             if "yes" in x:
                 launchImageMagicksInstaller()
-            return False
+                checkIfImageMagicksIsInstalled()
+            return
     else:
-        print("ImageMagick installation is not found!")
         print("Do you want to install ImageMagicks? (yes/no)")
         x = input("yes or no: ")
         if "yes" in x:
             launchImageMagicksInstaller()
-        return False        
+            checkIfImageMagicksIsInstalled()
+        return        
 
 if __name__ == "__main__":
     changes = ""
@@ -351,13 +355,10 @@ Options menu:
                     changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
                 else:
                     changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
-                    input("Press enter to continue to the main screen")
+                    input("Press enter to return to the main screen")
             case 4:
-                if checkIfImageMagicksIsInstalled():
-                    print("ImageMagicks is installed correctly")
-                else:
-                    print("ImageMagicks is NOT installed (unless you just installed it)")
-                input("Press enter to continue to the main screen")
+                checkIfImageMagicksIsInstalled()
+                input("Press enter to return to the main screen")
             case 5:
                 print("Exiting...")
                 quit()
