@@ -72,7 +72,7 @@ def scrapeVideos(pexelsApiKey: str):
 def usedQuoteToDifferentFile():
     """Removes the used quote from the .txt and places the quote in usedQuotes.txt"""
     quote = None
-    with open('quotes/motivational.txt', 'r+') as file:
+    with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
         lines = file.readlines()
         quote = lines[0]
         file.seek(0)
@@ -85,7 +85,7 @@ def usedQuoteToDifferentFile():
 
 def getQuote():
     """Get 1 quote from the text file"""
-    with open('quotes/motivational.txt', 'r+') as file:
+    with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
         lines = file.readlines()
         x = lines[0].replace("\n","").replace("-", "\n -")
         print ("Quote: ", x)
