@@ -7,7 +7,7 @@
 
 
 ## How to setup video
-https://user-images.githubusercontent.com/80321003/202254994-f6ff2825-08cd-4eae-90c5-44c1d19e6657.mp4
+https://user-images.githubusercontent.com/80321003/202257209-89529f74-6e4c-4839-90a7-24ab791ffb07.mp4
 
 ## Preview
 ![alt text](https://i.imgur.com/CkJYmLg.png)
