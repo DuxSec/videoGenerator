@@ -3,6 +3,7 @@ import json
 import gtts
 import random
 import os
+import subprocess
 from tqdm.auto import tqdm
 from moviepy.editor import *
 import os
@@ -272,11 +273,32 @@ def verifyData(data):
     print("Everything went well! Starting to create videos now!")
 
 
-
+def checkIfImageMagicksIsInstalled():
+    result = subprocess.run(['magick', 'identify', '--version'], stdout=subprocess.PIPE)
+    terminalOutput = str(result.stdout)
+    # print(x)
+    if "ImageMagick" in terminalOutput:
+        print("ImageMagicks installation is found")
+        print("Checking if you selected 'Install legacy utilities(e.g. Convert)' ")
+        try:
+            TextClip(txt="text") #trying to make a textclip
+            print("ImageMagicks seems be be installed correctly for use :)")
+            return True
+        except:
+            print("You did not install ImageMagicks with legacy utilities(e.g. Convert)!\nRerun the installation with this option enabled.")
+            return False
+    else:
+        print("ImageMagick installation is not found!")
+        print("Do you want to install ImageMagick?")
+        x = input("yes or no: ")
+        if "yes" in x:
+            print("Launching installer...")
+            print("In the installer, make sure to select this option(3rd screen):\nlegacy utilities(e.g. Convert)")
+            subprocess.run(['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
+        return False        
 
 if __name__ == "__main__":
     changes = ""
-
     while True:
         with open('config.json', 'r') as file:
             data = json.load(file)
@@ -303,7 +325,8 @@ Options menu:
     1) Change amount of videos to create
     2) Change Pexels API key
     3) Start generating videos
-    4) Exit
+    4) Check if ImageMagicks is installed (needed to run)
+    5) Exit
 
     Enter your choice: """)
         choice = input(loopPrint)
@@ -324,6 +347,12 @@ Options menu:
                     changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
                     input("Press enter to continue to the main screen")
             case 4:
+                if checkIfImageMagicksIsInstalled():
+                    print("ImageMagicks is installed correctly")
+                else:
+                    print("ImageMagicks is NOT installed (unless you just installed it)")
+                input("Press enter to continue to the main screen")
+            case 5:
                 print("Exiting...")
                 quit()
             case _:
