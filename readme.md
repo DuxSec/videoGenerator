@@ -10,6 +10,7 @@
 https://user-images.githubusercontent.com/80321003/202247406-d7c59868-2d3d-43ac-873e-2ba3a9d82cbd.mp4
 
 
+## Preview
 ![alt text](https://i.imgur.com/CkJYmLg.png)
 
 Example output video with automatic into:
@@ -18,6 +19,7 @@ https://www.youtube.com/shorts/JCElumu8KZ8
 Example output video without intro:
 https://youtube.com/shorts/j-xkH3DrD9k
 
+## Features
 - Generate unlimited video's
 - All songs are from youtube's free music library for commercial use.
 - 4500+ Quotes included
