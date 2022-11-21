@@ -2,13 +2,14 @@ import customtkinter as ctk
 import json
 import os
 
+
 class App(ctk.CTk):
     config_data = None
 
     def __init__(self):
         super().__init__()
         self.title("Video Generator")
-        self.geometry(f"{1024}x{768}")
+        self.geometry(f"{768}x{576}")
         self.minsize(400, 400)
 
         with open('config.json', 'r') as file:
@@ -21,6 +22,12 @@ class App(ctk.CTk):
                        and pexels_api_key != "None")
         if not api_key_set:
             self.setApiKey(text="You've not set your Pexels API Key yet.")
+
+        button = ctk.CTkButton(self,
+                               text="Set API Key",
+                               text_font=("Arial", 12),
+                               command=lambda: self.setApiKey(text="Change your Pexels API Key."))
+        button.grid(row=2, column=0, sticky=ctk.W, padx=(5))
 
     def setApiKey(self, text):
         window = ctk.CTkToplevel(self)
@@ -35,12 +42,15 @@ class App(ctk.CTk):
                              text_font=("Helvetica", 10, "bold"),
                              )
         label.grid(row=0, column=0, sticky=ctk.W, padx=(5))
+
         api_key_entry = ctk.CTkEntry(window,
                                      textvariable=ctk.StringVar(),
                                      width=290,
                                      placeholder_text="Pexels API Key"
                                      )
+        api_key_entry.insert(0, self.config_data['pexelsAPIKey'])
         api_key_entry.grid(row=1, column=0, padx=(5))
+
         save_button = ctk.CTkButton(window,
                                     text="Save",
                                     fg_color="#15803d",
@@ -48,9 +58,11 @@ class App(ctk.CTk):
                                     text_font=("Helvetica", 10, "bold"),
                                     text_color="white",
                                     width=10,
-                                    command=lambda: self.saveApiKey(api_key_entry.get(), window)
+                                    command=lambda: self.saveApiKey(
+                                        api_key_entry.get(), window)
                                     )
         save_button.grid(row=2, column=0, sticky=ctk.W, padx=5)
+
         quit_button = ctk.CTkButton(window,
                                     text="Quit",
                                     fg_color="#991b1b",
@@ -70,6 +82,7 @@ class App(ctk.CTk):
 
     def quit(self):
         super().quit()
+
 
 if __name__ == "__main__":
     gui = App()
