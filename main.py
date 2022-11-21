@@ -241,7 +241,7 @@ def mainVideoLoop(data):
         createVideo(quoteText, bgMusic, bgVideo, i, ttsAudio)
         cleanUpAfterVideoFinished()
         print("finished! video: ", i)
-        return True
+    return True
 
 
 def changeJsonValue(question, data, dataString):
