@@ -3,6 +3,7 @@ import json
 import os
 import random
 import subprocess
+import threading
 
 import customtkinter as ctk
 import gtts
@@ -228,7 +229,7 @@ class App(ctk.CTk):
                                  )
         top_label.grid(row=0, column=0, padx=(5), pady=(5))
         self.verifyData(top_label)
-        videoloop = self.mainVideoLoop(top_label)
+        videoloop = threading.Thread(target=self.mainVideoLoop, args=(top_label,)).start()
         if videoloop:
             top_label.configure(
                 text=f"Succesfully completed making {self.config_data['amountOfVideosToMake']} video(s)")
@@ -302,7 +303,7 @@ class App(ctk.CTk):
             return None
         return data
 
-    def usedQuoteToDifferentFile():
+    def usedQuoteToDifferentFile(self):
         """Removes the used quote from the .txt and places the quote in usedQuotes.txt"""
         quote = None
         with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
