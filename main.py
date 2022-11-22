@@ -1,16 +1,17 @@
-import requests
-import json
-import gtts
-import random
-import os
-import subprocess
-from tqdm.auto import tqdm
-from moviepy.editor import *
-import os
 import glob
+import json
+import os
+import random
+import subprocess
+
+import customtkinter as ctk
+import gtts
+import requests
+from moviepy.editor import *
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
-import customtkinter as ctk
+from tqdm.auto import tqdm
+
 
 class App(ctk.CTk):
     config_data = None
@@ -155,7 +156,6 @@ class App(ctk.CTk):
         window = ctk.CTkToplevel(self)
         window.title("ImageMagick")
         window.configure(fg_color="#1c1917")
-
         top_label = ctk.CTkLabel(window,
                                  text="Checking if ImageMagick is installed",
                                  text_font=("Helvetica", 12, "bold"),
@@ -223,22 +223,18 @@ class App(ctk.CTk):
         window.title("Generating Videos")
 
         top_label = ctk.CTkLabel(window,
-                             text="Generating videos",
-                             text_font=("Helvetica", 12, "bold"),
-                             )
+                                 text="Generating videos",
+                                 text_font=("Helvetica", 12, "bold"),
+                                 )
         top_label.grid(row=0, column=0, padx=(5), pady=(5))
-        bottom_label = ctk.CTkLabel(window,
-                                    text="",
-                                    text_font=("Helvetica", 10),
-                                    )
-        bottom_label.grid(row=1, column=0, padx=(5), pady=(5))
         self.verifyData(top_label)
         videoloop = self.mainVideoLoop(top_label)
         if videoloop:
-            top_label.configure(text=f"Succesfully completed making {self.config_data['amountOfVideosToMake']} video(s)")  
+            top_label.configure(
+                text=f"Succesfully completed making {self.config_data['amountOfVideosToMake']} video(s)")
 
-        #IMPLEMENT LOGGING HERE
-        #else:
+        # IMPLEMENT LOGGING HERE
+        # else:
         #    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
         #    top_label("Press enter to return to the main screen")
     # <----------------- END OF TOPLEVELS ----------------->#
@@ -253,7 +249,8 @@ class App(ctk.CTk):
         response = requests.get(url, stream=True)
         total_size_in_bytes = int(response.headers.get('content-length', 0))
         block_size = 1024  # 1 Kibibyte
-        progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
+        progress_bar = tqdm(total=total_size_in_bytes,
+                            unit='iB', unit_scale=True)
         save_as = "tempFiles/vid.mp4"  # the name you want to save file as
         with open(save_as, 'wb') as file:
             for data in response.iter_content(block_size):
@@ -264,9 +261,8 @@ class App(ctk.CTk):
             top_label(text="ERROR, something went wrong")
         return save_as
 
-
     def scrapeVideos(self, top_label):
-        #Scrapes video's from PEXELS about nature in portrait mode with API key
+        # Scrapes video's from PEXELS about nature in portrait mode with API key
         top_label.configure(text=" Scraping videos from Pexels")
         parameters = {
             'query': 'nature',
@@ -277,7 +273,8 @@ class App(ctk.CTk):
             pexels_auth_header = {
                 'Authorization': self.config_data['pexelsAPIKey']
             }
-            top_label.configure(text="Trying to request Pexels page with your api key")
+            top_label.configure(
+                text="Trying to request Pexels page with your api key")
             resp = requests.get("https://api.pexels.com/videos/search",
                                 headers=pexels_auth_header, params=parameters)
             statusCode = resp.status_code
@@ -287,7 +284,8 @@ class App(ctk.CTk):
                     The Pexels API is rate-limited to 200 requests per hour and 20,000 requests per month (https://www.pexels.com/api/documentation/#introduction).\n
                     Returned status code: {statusCode}""")
                 else:
-                    top_label.configure(text=f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
+                    top_label.configure(
+                        text=f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
                 return None
         except:
             top_label.configure(text="Error in request.get....!??")
@@ -299,10 +297,10 @@ class App(ctk.CTk):
             top_label.configure(text="Error in pexels json data ?")
             return None
         if results == 0:
-            top_label.configure(text=f"No video results for your query: {parameters['query']}")
+            top_label.configure(
+                text=f"No video results for your query: {parameters['query']}")
             return None
         return data
-
 
     def usedQuoteToDifferentFile():
         """Removes the used quote from the .txt and places the quote in usedQuotes.txt"""
@@ -317,9 +315,8 @@ class App(ctk.CTk):
         with open('quotes/usedQuotes.txt', 'a') as file:
             file.write(quote)
 
-
     def getQuote(self, top_label):
-        #Get 1 quote from the text file
+        # Get 1 quote from the text file
         with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
             lines = file.readlines()
             x = lines[0].replace("\n", "").replace("-", "\n -")
@@ -358,10 +355,11 @@ class App(ctk.CTk):
         return intro_final
 
     def createVideo(self, quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int, ttsAudio: bool, top_label):
-        #Creates the entire video with everything together - this should be split up in different methods
+        # Creates the entire video with everything together - this should be split up in different methods
         introText = ['A quote about never giving up on your dreams', 'A quote about being yourself', 'A quote about believing in yourself', 'A quote about making your dreams come true',
-                    'A quote about happiness', 'A quote to remind you to stay positive', 'A quote about never giving up', 'A quote about being grateful', 'A quote about taking risks', 'A quote about living your best life']
-        top_label.configure(text=f"Introtext we will use: {introText[videoNumber]}")
+                     'A quote about happiness', 'A quote to remind you to stay positive', 'A quote about never giving up', 'A quote about being grateful', 'A quote about taking risks', 'A quote about living your best life']
+        top_label.configure(
+            text=f"Introtext we will use: {introText[videoNumber]}")
         intro_final = self.videoIntro(introText, videoNumber)
 
         quoteArray = []
@@ -369,7 +367,8 @@ class App(ctk.CTk):
         totalTTSTime = 0
         completedVideoParts = []
 
-        top_label.configure(text=f"Going to create a total of {len(quoteArray)} 'main' clips")
+        top_label.configure(
+            text=f"Going to create a total of {len(quoteArray)} 'main' clips")
         for idx, sentence in enumerate(quoteArray):
             # create the audio
             save_as = f"tempFiles/temp_audio_{str(idx)}.mp3"
@@ -417,7 +416,7 @@ class App(ctk.CTk):
         # Set audio
         backgroundMusic = AudioFileClip(bgMusic)
         totalAudio = self.audioClip(ttsAudio, backgroundMusic,
-                            final_export_video, total_video_time, intro_final.duration)
+                                    final_export_video, total_video_time, intro_final.duration)
 
         final = concatenate_videoclips([intro_final, final_export_video])
         final.audio = totalAudio
@@ -439,7 +438,7 @@ class App(ctk.CTk):
         return new_audioclip
 
     def randomBgMusic(self, top_label):
-        #Get a random 'sad' song from the sad_music folder
+        # Get a random 'sad' song from the sad_music folder
         dir = "sad_music"
         x = random.choice(os.listdir(dir))
         top_label.configure(text=f"Random music chosen: {x}")
@@ -457,21 +456,20 @@ class App(ctk.CTk):
         # deleteTempFiles()
 
     def getBackgroundVideo(self, top_label) -> str:
-
         scrapedVideosJson = self.scrapeVideos(top_label)
         if scrapedVideosJson is None:
             return None
         videoArray = scrapedVideosJson['videos']
         randomVideoToScrape = random.randint(0, len(videoArray)-1)
         videoId = videoArray[randomVideoToScrape]['id']
-        top_label.configure(text = f"Going to scrape video with id: {videoId}")
+        top_label.configure(text=f"Going to scrape video with id: {videoId}")
         bgVideo = self.downloadVideo(videoId, top_label)
         return bgVideo
 
-
     def mainVideoLoop(self, top_label):
-        #Make X amount of videos.
-        for i in range(int(self.config_data['amountOfVideosToMake'])):  # amount of videos to generate
+        # Make X amount of videos.
+        # amount of videos to generate
+        for i in range(int(self.config_data['amountOfVideosToMake'])):
             bgVideo = self.getBackgroundVideo(top_label)
             if bgVideo is None:
                 return None
@@ -479,7 +477,8 @@ class App(ctk.CTk):
             # mp3 = makeMp3(quoteText) # make mp3 and save as: speech.mp3
             bgMusic = self.randomBgMusic(top_label)
             ttsAudio = True
-            self.createVideo(quoteText, bgMusic, bgVideo, i, ttsAudio, top_label)
+            self.createVideo(quoteText, bgMusic, bgVideo,
+                             i, ttsAudio, top_label)
             self.cleanUpAfterVideoFinished()
             top_label.configure(text="finished! video: ".format(i))
         return True
@@ -510,6 +509,7 @@ class App(ctk.CTk):
 
     def quit(self):
         super().quit()
+
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
