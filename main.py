@@ -12,7 +12,6 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
 import customtkinter as ctk
 
-
 class App(ctk.CTk):
     config_data = None
 
@@ -511,7 +510,6 @@ class App(ctk.CTk):
 
     def quit(self):
         super().quit()
-
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
