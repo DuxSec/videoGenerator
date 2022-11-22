@@ -34,6 +34,7 @@ class App(ctk.CTk):
         if not api_key_set:
             self.setApiKeyTopLevel(
                 text="You've not set your Pexels API Key yet.")
+
         # <----------------- LEFT FRAME ----------------->#
         self.frame_left = ctk.CTkFrame(master=self,
                                        width=180,
@@ -102,7 +103,6 @@ class App(ctk.CTk):
                                hover_color="#7c3aed",
                                command=lambda: self.generateVideosTopLevel())
         button.grid(row=0, column=1, sticky=ctk.NSEW, padx=5, pady=5)
-
         # <----------------- END OF RIGHT FRAME -------------->#
 
     # <----------------- TOPLEVELS ----------------->#
@@ -233,7 +233,7 @@ class App(ctk.CTk):
             top_label.configure(
                 text=f"Succesfully completed making {self.config_data['amountOfVideosToMake']} video(s)")
 
-        # IMPLEMENT LOGGING HERE
+    # IMPLEMENT LOGGING HERE
         # else:
         #    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
         #    top_label("Press enter to return to the main screen")
