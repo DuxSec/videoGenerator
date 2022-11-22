@@ -1,5 +1,5 @@
 import requests
-import json 
+import json
 import gtts
 import random
 import os
@@ -13,15 +13,17 @@ from mutagen.mp3 import MP3
 import customtkinter as ctk
 
 # download background video from pexels - https://www.pexels.com/api/documentation/#videos-search__parameters
+
+
 def downloadVideo(id) -> str:
     """Downloads video from Pexels with the according video ID """
     url = "https://www.pexels.com/video/" + str(id) + "/download.mp4"
     # Streaming, so we can iterate over the response.
     response = requests.get(url, stream=True)
-    total_size_in_bytes= int(response.headers.get('content-length', 0))
-    block_size = 1024 #1 Kibibyte
+    total_size_in_bytes = int(response.headers.get('content-length', 0))
+    block_size = 1024  # 1 Kibibyte
     progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
-    save_as = "tempFiles/vid.mp4" # the name you want to save file as
+    save_as = "tempFiles/vid.mp4"  # the name you want to save file as
     with open(save_as, 'wb') as file:
         for data in response.iter_content(block_size):
             progress_bar.update(len(data))
@@ -31,22 +33,22 @@ def downloadVideo(id) -> str:
         print("ERROR, something went wrong")
     return save_as
 
-        
 
 def scrapeVideos(pexelsApiKey: str):
     """Scrapes video's from PEXELS about nature in portrait mode with API key"""
     print("scrapeVideos()")
     parameters = {
-        'query' : 'nature',
-        'orientation' : 'portrait',
-        #'page' : '1',
+        'query': 'nature',
+        'orientation': 'portrait',
+        # 'page' : '1',
     }
     try:
         pexels_auth_header = {
-            'Authorization' : pexelsApiKey
+            'Authorization': pexelsApiKey
         }
         print("Trying to request Pexels page with your api key")
-        resp = requests.get("https://api.pexels.com/videos/search", headers=pexels_auth_header, params=parameters)
+        resp = requests.get("https://api.pexels.com/videos/search",
+                            headers=pexels_auth_header, params=parameters)
         statusCode = resp.status_code
         if statusCode != 200:
             if statusCode == 429:
@@ -54,7 +56,8 @@ def scrapeVideos(pexelsApiKey: str):
                 The Pexels API is rate-limited to 200 requests per hour and 20,000 requests per month (https://www.pexels.com/api/documentation/#introduction).\n
                 Returned status code: {statusCode}""")
             else:
-                print(f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
+                print(
+                    f"Error requesting Pexels, is your api key correct? Returned status code: {statusCode}")
             print("Exiting...!")
             return None
     except:
@@ -67,9 +70,11 @@ def scrapeVideos(pexelsApiKey: str):
         print("Error in pexels json data ?")
         return None
     if results == 0:
-        print("No video results for your query: ", parameters['query'],"\nExiting..." )
+        print("No video results for your query: ",
+              parameters['query'], "\nExiting...")
         return None
     return data
+
 
 def usedQuoteToDifferentFile():
     """Removes the used quote from the .txt and places the quote in usedQuotes.txt"""
@@ -80,7 +85,7 @@ def usedQuoteToDifferentFile():
         file.seek(0)
         file.truncate()
         file.writelines(lines[1:])
-    
+
     with open('quotes/usedQuotes.txt', 'a') as file:
         file.write(quote)
 
@@ -89,8 +94,8 @@ def getQuote():
     """Get 1 quote from the text file"""
     with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
         lines = file.readlines()
-        x = lines[0].replace("\n","").replace("-", "\n -")
-        print ("Quote: ", x)
+        x = lines[0].replace("\n", "").replace("-", "\n -")
+        print("Quote: ", x)
         return x
 
 # def makeMp3(data):
@@ -100,6 +105,7 @@ def getQuote():
 #     tts.save(save_as)
 #     return save_as
 
+
 def videoIntro(introText, videoNumber) -> CompositeVideoClip:
     intro_text_clip = TextClip(
         txt=introText[videoNumber],
@@ -108,22 +114,27 @@ def videoIntro(introText, videoNumber) -> CompositeVideoClip:
         font="Roboto-Regular",
         color="white",
         method="caption",
-        ).set_position('center')
-    
+    ).set_position('center')
+
     intro_width, intro_height = intro_text_clip.size
     intro_color_clip = ColorClip(
         size=(intro_width+100, intro_height+50),
-        color=(0,0,0)
-        ).set_opacity(.6)
-    intro_clip = VideoFileClip("intro_clip/2_hands_up.mp4").resize((1080,1920))
+        color=(0, 0, 0)
+    ).set_opacity(.6)
+    intro_clip = VideoFileClip(
+        "intro_clip/2_hands_up.mp4").resize((1080, 1920))
     intro_clip_duration = 6
-    text_with_bg= CompositeVideoClip([intro_color_clip, intro_text_clip]).set_position(lambda t: ('center', 200+t)).set_duration(intro_clip_duration)
-    intro_final = CompositeVideoClip([intro_clip, text_with_bg]).set_duration(intro_clip_duration)
+    text_with_bg = CompositeVideoClip([intro_color_clip, intro_text_clip]).set_position(
+        lambda t: ('center', 200+t)).set_duration(intro_clip_duration)
+    intro_final = CompositeVideoClip(
+        [intro_clip, text_with_bg]).set_duration(intro_clip_duration)
     return intro_final
+
 
 def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int, ttsAudio: bool):
     """Creates the entire video with everything together - this should be split up in different methods"""
-    introText = ['A quote about never giving up on your dreams','A quote about being yourself','A quote about believing in yourself','A quote about making your dreams come true','A quote about happiness','A quote to remind you to stay positive','A quote about never giving up', 'A quote about being grateful', 'A quote about taking risks', 'A quote about living your best life']
+    introText = ['A quote about never giving up on your dreams', 'A quote about being yourself', 'A quote about believing in yourself', 'A quote about making your dreams come true',
+                 'A quote about happiness', 'A quote to remind you to stay positive', 'A quote about never giving up', 'A quote about being grateful', 'A quote about taking risks', 'A quote about living your best life']
     print(f"Introtext we will use: {introText[videoNumber]}")
     intro_final = videoIntro(introText, videoNumber)
 
@@ -134,17 +145,17 @@ def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int, tt
 
     print(f"Going to create a total of {len(quoteArray)} 'main' clips")
     for idx, sentence in enumerate(quoteArray):
-        #create the audio
+        # create the audio
         save_as = f"tempFiles/temp_audio_{str(idx)}.mp3"
         tts = gtts.gTTS(sentence, lang='en', tld='ca')
-        #save audio
+        # save audio
         tts.save(save_as)
         audio = MP3(save_as)
         time = audio.info.length
         totalTTSTime += time
         print(f"Mp3 {str(idx)} has audio length: {time} ")
 
-        #createTheClip with the according text
+        # createTheClip with the according text
         text_clip = TextClip(
             txt=sentence,
             fontsize=70,
@@ -152,56 +163,61 @@ def createVideo(quoteText: str, bgMusic: str, bgVideo: str, videoNumber: int, tt
             font="Roboto-Regular",
             color="white",
             method="caption",
-            ).set_position('center')
-        #make background for the text
+        ).set_position('center')
+        # make background for the text
         tc_width, tc_height = text_clip.size
         color_clip = ColorClip(
             size=(tc_width+100, tc_height+50),
-            color=(0,0,0)
-            ).set_opacity(.6)
+            color=(0, 0, 0)
+        ).set_opacity(.6)
 
-        text_together = CompositeVideoClip([color_clip, text_clip]).set_duration(time).set_position('center')
+        text_together = CompositeVideoClip(
+            [color_clip, text_clip]).set_duration(time).set_position('center')
         audio_clip = AudioFileClip(save_as)
         new_audioclip = CompositeAudioClip([audio_clip])
         text_together.audio = new_audioclip
         completedVideoParts.append(text_together)
 
-    combined_quote_text_with_audio = concatenate_videoclips(completedVideoParts).set_position('center') 
+    combined_quote_text_with_audio = concatenate_videoclips(
+        completedVideoParts).set_position('center')
     combined_quote_text_with_audio.set_position('center')
 
-    #calculate total time
+    # calculate total time
     total_video_time = intro_final.duration + totalTTSTime
-    background_clip = VideoFileClip(bgVideo).resize((1080,1920))
-    final_export_video = CompositeVideoClip([background_clip, combined_quote_text_with_audio]).subclip(0, totalTTSTime)
+    background_clip = VideoFileClip(bgVideo).resize((1080, 1920))
+    final_export_video = CompositeVideoClip(
+        [background_clip, combined_quote_text_with_audio]).subclip(0, totalTTSTime)
 
-    #Set audio
+    # Set audio
     backgroundMusic = AudioFileClip(bgMusic)
-    totalAudio = audioClip(ttsAudio, backgroundMusic, final_export_video, total_video_time, intro_final.duration)
+    totalAudio = audioClip(ttsAudio, backgroundMusic,
+                           final_export_video, total_video_time, intro_final.duration)
 
     final = concatenate_videoclips([intro_final, final_export_video])
     final.audio = totalAudio
     final.write_videofile("VID_" + str(videoNumber) + ".mp4", threads=12)
+
 
 def audioClip(ttsAudio: bool, backgroundMusic, final_export_video, total_video_time, introDuration: int) -> CompositeAudioClip:
     """Makes the audioclip for the entire video, ttsAudio is the boolean that the user sets (yes/no TTS in the quotetext)"""
     new_audioclip = None
     if ttsAudio:
         new_audioclip = CompositeAudioClip([
-            backgroundMusic, 
-            final_export_video.audio.set_start(introDuration) #uncomment to get TTS audio -> goes to else
-            ]).subclip(0,total_video_time)
+            backgroundMusic,
+            # uncomment to get TTS audio -> goes to else
+            final_export_video.audio.set_start(introDuration)
+        ]).subclip(0, total_video_time)
     else:
         new_audioclip = CompositeAudioClip([
-        backgroundMusic, 
-        ]).subclip(0,total_video_time)
+            backgroundMusic,
+        ]).subclip(0, total_video_time)
     return new_audioclip
-
 
 
 def randomBgMusic():
     """Get a random 'sad' song from the sad_music folder"""
     dir = "sad_music"
-    x = random.choice(os.listdir(dir)) 
+    x = random.choice(os.listdir(dir))
     print("Random music chosen: ", x)
     return dir + "/" + x
 
@@ -213,12 +229,14 @@ def deleteTempFiles():
     for x in files:
         os.remove(x)
 
+
 def cleanUpAfterVideoFinished():
     usedQuoteToDifferentFile()
     # deleteTempFiles()
 
+
 def getBackgroundVideo(pexelsApiKey) -> str:
-    
+
     scrapedVideosJson = scrapeVideos(pexelsApiKey)
     if scrapedVideosJson is None:
         return None
@@ -229,9 +247,10 @@ def getBackgroundVideo(pexelsApiKey) -> str:
     bgVideo = downloadVideo(videoId)
     return bgVideo
 
+
 def mainVideoLoop(data):
     """Make X amount of videos."""
-    for i in range(int(data['amountOfVideosToMake'])): #amount of videos to generate
+    for i in range(int(data['amountOfVideosToMake'])):  # amount of videos to generate
         bgVideo = getBackgroundVideo(data['pexelsAPIKey'])
         if bgVideo is None:
             return None
@@ -249,7 +268,8 @@ def changeJsonValue(question, data, dataString):
     user_input = input(question)
     data[dataString] = user_input
     with open('config.json', 'w') as f:
-        json.dump(data, f, ensure_ascii=False, indent = 4, sort_keys=True)
+        json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -263,7 +283,6 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-
 def verifyData(data):
     """Verify amount of videos to make and pexelsAPI (does 1 request via scrapeVideo's method)"""
     print("Checking data....")
@@ -274,48 +293,14 @@ def verifyData(data):
     print("Everything went well! Starting to create videos now!")
 
 
-def launchImageMagicksInstaller():
-    print("Launching installer...")
-    print("In the installer, make sure to select this option(3rd screen):{bcolors.WARNING}legacy utilities(e.g. Convert){bcolors.ENDC}")
-    subprocess.run(['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
-
-def checkIfImageMagicksIsInstalled():
-    terminalOutput = ""
-    try:
-        result = subprocess.run(['magick', 'identify', '--version'], stdout=subprocess.PIPE)
-        terminalOutput = str(result.stdout)
-    except FileNotFoundError:
-        print("ImageMagick installation is not found!")
-    if "ImageMagick" in terminalOutput:
-        print("ImageMagicks installation is found")
-        print("Checking if you selected 'Install legacy utilities(e.g. Convert)' ")
-        try:
-            TextClip(txt="text") #trying to make a textclip
-            print(f"{bcolors.OKGREEN}ImageMagicks is installed correctly{changes}{bcolors.ENDC}")
-            return
-        except:
-            print(f"You did not install ImageMagicks with {bcolors.WARNING}legacy utilities(e.g. Convert){bcolors.ENDC}!\nRerun the installation with this option enabled.")
-            x = input("Do you want to reinstall ImageMagicks? (yes/no)")
-            if "yes" in x:
-                launchImageMagicksInstaller()
-                checkIfImageMagicksIsInstalled()
-            return
-    else:
-        print("Do you want to install ImageMagicks? (yes/no)")
-        x = input("yes or no: ")
-        if "yes" in x:
-            launchImageMagicksInstaller()
-            checkIfImageMagicksIsInstalled()
-        return        
-
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    changes = ""
 #    while True:
 #        with open('config.json', 'r') as file:
 #            data = json.load(file)
 #        os.system('cls' if os.name=='nt' else 'clear')
 #        loopPrint = (f"""{bcolors.HEADER}
-#        
+#
 #    /__/|__                                                            __//|
 #    |__|/_/|__                 Video generator v1.1.0                _/_|_||
 #    |_|___|/_/|__                     fabbree                     __/_|___||
@@ -328,11 +313,11 @@ def checkIfImageMagicksIsInstalled():
 #
 #                {bcolors.OKGREEN}   {changes}{bcolors.ENDC}
 #
-#Current configurations:
+# Current configurations:
 #    Your Pexels API key: {bcolors.WARNING}{data['pexelsAPIKey']}{bcolors.ENDC}
 #    Amount of videos to create: {bcolors.WARNING}{data['amountOfVideosToMake']}{bcolors.ENDC}
-#    
-#Options menu:
+#
+# Options menu:
 #    1) Change amount of videos to create
 #    2) Change Pexels API key
 #    3) Start generating videos
@@ -346,7 +331,7 @@ def checkIfImageMagicksIsInstalled():
 #            case 1:
 #                changeJsonValue("Amount of videos to create: ", data, 'amountOfVideosToMake')
 #                changes = "updated video's to create successfully"
-#            case 2:    
+#            case 2:
 #                changeJsonValue("Your Pexels API key: ", data, 'pexelsAPIKey')
 #                changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
 #            case 3:
@@ -365,7 +350,6 @@ def checkIfImageMagicksIsInstalled():
 #                quit()
 #            case _:
 #                print("Invalid option! Example input: 1")
-
 
 
 class App(ctk.CTk):
@@ -389,8 +373,9 @@ class App(ctk.CTk):
                        and pexels_api_key != "Not set"
                        and pexels_api_key != "None")
         if not api_key_set:
-            self.setApiKeyTopLevel(text="You've not set your Pexels API Key yet.")
-        #<----------------- LEFT FRAME ----------------->#
+            self.setApiKeyTopLevel(
+                text="You've not set your Pexels API Key yet.")
+        # <----------------- LEFT FRAME ----------------->#
         self.frame_left = ctk.CTkFrame(master=self,
                                        width=180,
                                        fg_color="#292524",
@@ -401,12 +386,14 @@ class App(ctk.CTk):
 
         current_config_label = ctk.CTkLabel(self.frame_left,
                                             text="Current Config",
-                                            text_font=("Helvetica", 14, "bold"),
+                                            text_font=(
+                                                "Helvetica", 14, "bold"),
                                             width=20,
                                             height=1,
                                             anchor=ctk.W,
                                             corner_radius=0)
-        current_config_label.grid(row=0, column=0, sticky=ctk.W, padx=5, pady=5)
+        current_config_label.grid(
+            row=0, column=0, sticky=ctk.W, padx=5, pady=5)
 
         change_apikey_button = ctk.CTkButton(self.frame_left,
                                              text="Change API Key",
@@ -428,24 +415,36 @@ class App(ctk.CTk):
         amount_of_videos_entry.insert(
             0, f"{self.config_data['amountOfVideosToMake']}")
         update_amount_of_videos_button = ctk.CTkButton(self.frame_left,
-                                                         text="Update",
-                                                            text_font=("Helvetica", 10),
-                                                            fg_color="#047857",
-                                                            hover_color="#059669",
-                                                            command=lambda: self.saveAmountOfVideos(amount_of_videos_entry.get()))
-        update_amount_of_videos_button.grid(row=7, column=0, padx=(5), pady=(5))
-        #<----------------- END OF LEFT FRAME ----------------->#
-        
-        #<----------------- REST OF WINDOW -------------------->#
+                                                       text="Update",
+                                                       text_font=(
+                                                           "Helvetica", 10),
+                                                       fg_color="#047857",
+                                                       hover_color="#059669",
+                                                       command=lambda: self.saveAmountOfVideos(amount_of_videos_entry.get()))
+        update_amount_of_videos_button.grid(
+            row=7, column=0, padx=(5), pady=(5))
+
+        check_if_imagemagick_is_installed_button = ctk.CTkButton(self.frame_left,
+                                                                 text="Check ImageMagick \n installation",
+                                                                 text_font=(
+                                                                     "Helvetica", 10),
+                                                                 fg_color="#047857",
+                                                                 hover_color="#059669",
+                                                                 command=lambda: self.checkIfImageMagicksIsInstalled())
+        check_if_imagemagick_is_installed_button.grid(
+            row=12, column=0, padx=(5), pady=(5))
+
+        # <----------------- END OF LEFT FRAME ----------------->#
+
+        # <----------------- REST OF WINDOW -------------------->#
         button = ctk.CTkButton(self,
-                                 text="Generate Videos",
-                                    text_font=("Helvetica", 10),
-                                    fg_color="#047857",
-                                    hover_color="#059669",
-                                    command=lambda: mainVideoLoop(self.config_data))
+                               text="Generate Videos",
+                               text_font=("Helvetica", 10),
+                               fg_color="#047857",
+                               hover_color="#059669",
+                               command=lambda: mainVideoLoop(self.config_data))
         button.grid(row=0, column=1, sticky=ctk.NSEW, padx=5, pady=5)
-        #<----------------- REST OF WINDOW ------------------->#
-        
+        # <----------------- REST OF WINDOW ------------------->#
 
     def setApiKeyTopLevel(self, text):
         window = ctk.CTkToplevel(self)
@@ -492,7 +491,79 @@ class App(ctk.CTk):
                                     command=lambda: self.quit()
                                     )
         quit_button.grid(row=2, column=0, sticky=ctk.E, padx=5, pady=5)
-        
+
+    def checkIfImageMagicksIsInstalled(self):
+        window = ctk.CTkToplevel(self)
+        window.title("ImageMagick")
+        window.geometry(f"{305}x{100}")
+        window.configure(fg_color="#1c1917")
+
+        top_label = ctk.CTkLabel(window,
+                                 text="Checking if ImageMagick is installed",
+                                 text_font=("Helvetica", 12, "bold"),
+                                 )
+        top_label.grid(row=1, column=0, padx=(5), pady=(0))
+        bottom_label = ctk.CTkLabel(window,
+                                    text="",
+                                    anchor=ctk.W,
+                                    text_font=("Helvetica", 10),
+                                    )
+        bottom_label.grid(row=2, column=0, padx=(5), pady=(0))
+
+        terminalOutput = ""
+        try:
+            result = subprocess.run(
+                ['magick', 'identify', '--version'], stdout=subprocess.PIPE)
+            terminalOutput = str(result.stdout)
+        except FileNotFoundError:
+            top_label.configure(text="ImageMagick installation not found")
+        if "ImageMagick" in terminalOutput:
+            top_label.configure(text="ImageMagicks installation is found")
+            bottom_label.configure(text="Checking if you selected 'Install legacy utilities(e.g. Convert)'")
+            try:
+                TextClip(txt="text")  # trying to make a textclip
+                top_label.configure(text="ImageMagicks is installed correctly")
+                bottom_label.configure(text="You can now generate videos")
+                return
+            except:
+                top_label.configure(
+                    text="""Legacy utilities are not installed""")
+                bottom_label.configure(
+                    text="Do you want to reinstall ImageMagicks?")
+                self.showInstallButtons(window)
+        else:
+            top_label.configure(text="ImageMagicks installation is not found")
+            bottom_label.configure(text="Do you want to install ImageMagicks?")
+            self.showInstallButtons(window)
+
+    def showInstallButtons(self, window):
+        install_button = ctk.CTkButton(window,
+                                       text="Yes",
+                                       fg_color="#15803d",
+                                       hover_color="#16a34a",
+                                       text_font=("Helvetica", 10, "bold"),
+                                       text_color="white",
+                                       width=16,
+                                       command=lambda: self.launchImageMagicksInstaller(
+                                           window)
+                                       )
+        install_button.grid(row=3, column=0, sticky=ctk.W, padx=5)
+        quit_button = ctk.CTkButton(window,
+                                    text="No",
+                                    fg_color="#991b1b",
+                                    hover_color="#b91c1c",
+                                    text_font=("Helvetica", 10, "bold"),
+                                    text_color="white",
+                                    width=16,
+                                    command=lambda: window.destroy()
+                                    )
+        quit_button.grid(row=3, column=1, sticky=ctk.E, padx=5)
+
+    def launchImageMagicksInstaller(self, window):
+        window.destroy()
+        subprocess.run(
+            ['imageMagicksInstaller/ImageMagick-7.1.0-52-Q16-HDRI-x64-dll.exe'], stdout=subprocess.PIPE)
+
     def saveApiKey(self, api_key, window):
         self.config_data['pexelsAPIKey'] = api_key
         with open('config.json', 'w') as file:
@@ -506,6 +577,7 @@ class App(ctk.CTk):
 
     def quit(self):
         super().quit()
+
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
