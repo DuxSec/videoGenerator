@@ -10,6 +10,7 @@ import os
 import glob
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mutagen.mp3 import MP3
+import customtkinter as ctk
 
 # download background video from pexels - https://www.pexels.com/api/documentation/#videos-search__parameters
 def downloadVideo(id) -> str:
@@ -307,63 +308,206 @@ def checkIfImageMagicksIsInstalled():
             checkIfImageMagicksIsInstalled()
         return        
 
-if __name__ == "__main__":
-    changes = ""
-    while True:
+#if __name__ == "__main__":
+#    changes = ""
+#    while True:
+#        with open('config.json', 'r') as file:
+#            data = json.load(file)
+#        os.system('cls' if os.name=='nt' else 'clear')
+#        loopPrint = (f"""{bcolors.HEADER}
+#        
+#    /__/|__                                                            __//|
+#    |__|/_/|__                 Video generator v1.1.0                _/_|_||
+#    |_|___|/_/|__                     fabbree                     __/_|___||
+#    |___|____|/_/|__                                           __/_|____|_||
+#    |_|___|_____|/_/|_________________________________________/_|_____|___||
+#    |___|___|__|___|/__/___/___/___/___/___/___/___/___/___/_|_____|____|_||
+#    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___||
+#    |___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|_||
+#    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|/{bcolors.ENDC}
+#
+#                {bcolors.OKGREEN}   {changes}{bcolors.ENDC}
+#
+#Current configurations:
+#    Your Pexels API key: {bcolors.WARNING}{data['pexelsAPIKey']}{bcolors.ENDC}
+#    Amount of videos to create: {bcolors.WARNING}{data['amountOfVideosToMake']}{bcolors.ENDC}
+#    
+#Options menu:
+#    1) Change amount of videos to create
+#    2) Change Pexels API key
+#    3) Start generating videos
+#    4) Check if ImageMagicks is installed (needed to run)
+#    5) Exit
+#
+#    Enter your choice: """)
+#        choice = input(loopPrint)
+#        changes = ""
+#        match int(choice):
+#            case 1:
+#                changeJsonValue("Amount of videos to create: ", data, 'amountOfVideosToMake')
+#                changes = "updated video's to create successfully"
+#            case 2:    
+#                changeJsonValue("Your Pexels API key: ", data, 'pexelsAPIKey')
+#                changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
+#            case 3:
+#                verifyData(data)
+#                videoloop = mainVideoLoop(data)
+#                if videoloop:
+#                    changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
+#                else:
+#                    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
+#                    input("Press enter to return to the main screen")
+#            case 4:
+#                checkIfImageMagicksIsInstalled()
+#                input("Press enter to return to the main screen")
+#            case 5:
+#                print("Exiting...")
+#                quit()
+#            case _:
+#                print("Invalid option! Example input: 1")
+
+
+
+class App(ctk.CTk):
+    config_data = None
+
+    def __init__(self):
+        super().__init__()
+        self.title("Video Generator")
+        self.geometry(f"{640}x{480}")
+        self.minsize(400, 400)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.configure(fg_color="#1c1917")
+
         with open('config.json', 'r') as file:
-            data = json.load(file)
-        os.system('cls' if os.name=='nt' else 'clear')
-        loopPrint = (f"""{bcolors.HEADER}
+            self.config_data = json.load(file)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        pexels_api_key = self.config_data['pexelsAPIKey']
+        api_key_set = (pexels_api_key != ""
+                       and pexels_api_key != "Not set"
+                       and pexels_api_key != "None")
+        if not api_key_set:
+            self.setApiKeyTopLevel(text="You've not set your Pexels API Key yet.")
+        #<----------------- LEFT FRAME ----------------->#
+        self.frame_left = ctk.CTkFrame(master=self,
+                                       width=180,
+                                       fg_color="#292524",
+                                       corner_radius=0)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
+        self.frame_left.grid_rowconfigure(1, minsize=10)
+        self.frame_left.grid_rowconfigure(3, minsize=10)
+
+        current_config_label = ctk.CTkLabel(self.frame_left,
+                                            text="Current Config",
+                                            text_font=("Helvetica", 14, "bold"),
+                                            width=20,
+                                            height=1,
+                                            anchor=ctk.W,
+                                            corner_radius=0)
+        current_config_label.grid(row=0, column=0, sticky=ctk.W, padx=5, pady=5)
+
+        change_apikey_button = ctk.CTkButton(self.frame_left,
+                                             text="Change API Key",
+                                             text_font=("Helvetica", 10),
+                                             fg_color="#047857",
+                                             hover_color="#059669",
+                                             command=lambda: self.setApiKeyTopLevel(text="Change your Pexels API Key."))
+        change_apikey_button.grid(row=2, column=0, padx=5)
+
+        amount_of_videos_label = ctk.CTkLabel(self.frame_left,
+                                              text="Amount of videos",
+                                              text_font=("Helvetica", 10),
+                                              anchor=ctk.W,)
+        amount_of_videos_label.grid(row=5, column=0, padx=(5))
+
+        amount_of_videos_entry = ctk.CTkEntry(self.frame_left,
+                                              text_font=("Helvetica", 10))
+        amount_of_videos_entry.grid(row=6, column=0, padx=(5))
+        amount_of_videos_entry.insert(
+            0, f"{self.config_data['amountOfVideosToMake']}")
+        update_amount_of_videos_button = ctk.CTkButton(self.frame_left,
+                                                         text="Update",
+                                                            text_font=("Helvetica", 10),
+                                                            fg_color="#047857",
+                                                            hover_color="#059669",
+                                                            command=lambda: self.saveAmountOfVideos(amount_of_videos_entry.get()))
+        update_amount_of_videos_button.grid(row=7, column=0, padx=(5), pady=(5))
+        #<----------------- END OF LEFT FRAME ----------------->#
         
-    /__/|__                                                            __//|
-    |__|/_/|__                 Video generator v1.1.0                _/_|_||
-    |_|___|/_/|__                     fabbree                     __/_|___||
-    |___|____|/_/|__                                           __/_|____|_||
-    |_|___|_____|/_/|_________________________________________/_|_____|___||
-    |___|___|__|___|/__/___/___/___/___/___/___/___/___/___/_|_____|____|_||
-    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___||
-    |___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|_||
-    |_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|/{bcolors.ENDC}
+        #<----------------- REST OF WINDOW -------------------->#
+        button = ctk.CTkButton(self,
+                                 text="Generate Videos",
+                                    text_font=("Helvetica", 10),
+                                    fg_color="#047857",
+                                    hover_color="#059669",
+                                    command=lambda: mainVideoLoop(self.config_data))
+        button.grid(row=0, column=1, sticky=ctk.NSEW, padx=5, pady=5)
+        #<----------------- REST OF WINDOW ------------------->#
+        
 
-                {bcolors.OKGREEN}   {changes}{bcolors.ENDC}
+    def setApiKeyTopLevel(self, text):
+        window = ctk.CTkToplevel(self)
+        window.title("Pexels API Key")
+        window.geometry(f"{300}x{100}")
+        window.minsize(300, 100)
+        window.configure(fg_color="#1c1917")
 
-Current configurations:
-    Your Pexels API key: {bcolors.WARNING}{data['pexelsAPIKey']}{bcolors.ENDC}
-    Amount of videos to create: {bcolors.WARNING}{data['amountOfVideosToMake']}{bcolors.ENDC}
-    
-Options menu:
-    1) Change amount of videos to create
-    2) Change Pexels API key
-    3) Start generating videos
-    4) Check if ImageMagicks is installed (needed to run)
-    5) Exit
+        label = ctk.CTkLabel(window,
+                             text=text,
+                             justify="left",
+                             anchor=ctk.W,
+                             text_font=("Helvetica", 10, "bold"),
+                             )
+        label.grid(row=0, column=0, sticky=ctk.W, padx=(5))
 
-    Enter your choice: """)
-        choice = input(loopPrint)
-        changes = ""
-        match int(choice):
-            case 1:
-                changeJsonValue("Amount of videos to create: ", data, 'amountOfVideosToMake')
-                changes = "updated video's to create successfully"
-            case 2:    
-                changeJsonValue("Your Pexels API key: ", data, 'pexelsAPIKey')
-                changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
-            case 3:
-                verifyData(data)
-                videoloop = mainVideoLoop(data)
-                if videoloop:
-                    changes = f"Succesfully completed making {data['amountOfVideosToMake']} video(s)"
-                else:
-                    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
-                    input("Press enter to return to the main screen")
-            case 4:
-                checkIfImageMagicksIsInstalled()
-                input("Press enter to return to the main screen")
-            case 5:
-                print("Exiting...")
-                quit()
-            case _:
-                print("Invalid option! Example input: 1")
-    
+        api_key_entry = ctk.CTkEntry(window,
+                                     textvariable=ctk.StringVar(),
+                                     width=290,
+                                     placeholder_text="Pexels API Key"
+                                     )
+        api_key_entry.insert(0, self.config_data['pexelsAPIKey'])
+        api_key_entry.grid(row=1, column=0, padx=(5))
 
+        save_button = ctk.CTkButton(window,
+                                    text="Save",
+                                    fg_color="#15803d",
+                                    hover_color="#16a34a",
+                                    text_font=("Helvetica", 10, "bold"),
+                                    text_color="white",
+                                    width=10,
+                                    command=lambda: self.saveApiKey(
+                                        api_key_entry.get(), window)
+                                    )
+        save_button.grid(row=2, column=0, sticky=ctk.W, padx=5)
 
+        quit_button = ctk.CTkButton(window,
+                                    text="Quit",
+                                    fg_color="#991b1b",
+                                    hover_color="#b91c1c",
+                                    text_font=("Helvetica", 10, "bold"),
+                                    text_color="white",
+                                    width=12,
+                                    command=lambda: self.quit()
+                                    )
+        quit_button.grid(row=2, column=0, sticky=ctk.E, padx=5, pady=5)
+        
+    def saveApiKey(self, api_key, window):
+        self.config_data['pexelsAPIKey'] = api_key
+        with open('config.json', 'w') as file:
+            json.dump(self.config_data, file, indent=4)
+        window.destroy()
+
+    def saveAmountOfVideos(self, amount_of_videos):
+        self.config_data['amountOfVideosToMake'] = amount_of_videos
+        with open('config.json', 'w') as file:
+            json.dump(self.config_data, file, indent=4)
+
+    def quit(self):
+        super().quit()
+
+if __name__ == "__main__":
+    ctk.set_appearance_mode("dark")
+    gui = App()
+    gui.mainloop()
