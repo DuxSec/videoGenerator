@@ -264,33 +264,6 @@ def mainVideoLoop(data):
     return True
 
 
-def changeJsonValue(question, data, dataString):
-    user_input = input(question)
-    data[dataString] = user_input
-    with open('config.json', 'w') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
-
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
-def verifyData(data):
-    """Verify amount of videos to make and pexelsAPI (does 1 request via scrapeVideo's method)"""
-    print("Checking data....")
-    if int(data['amountOfVideosToMake']) < 1:
-        print("Amount of videos to create is smaller then 1.\nExiting...")
-        quit()
-    scrapeVideos(data['pexelsAPIKey'])
-    print("Everything went well! Starting to create videos now!")
 
 
 # if __name__ == "__main__":
@@ -328,12 +301,6 @@ def verifyData(data):
 #        choice = input(loopPrint)
 #        changes = ""
 #        match int(choice):
-#            case 1:
-#                changeJsonValue("Amount of videos to create: ", data, 'amountOfVideosToMake')
-#                changes = "updated video's to create successfully"
-#            case 2:
-#                changeJsonValue("Your Pexels API key: ", data, 'pexelsAPIKey')
-#                changes = f"updated your API key successfully to - {data['pexelsAPIKey']}"
 #            case 3:
 #                verifyData(data)
 #                videoloop = mainVideoLoop(data)
@@ -342,14 +309,6 @@ def verifyData(data):
 #                else:
 #                    changes = f"An error occurred somewhere above ^ (copy -> sent to developer)"
 #                    input("Press enter to return to the main screen")
-#            case 4:
-#                checkIfImageMagicksIsInstalled()
-#                input("Press enter to return to the main screen")
-#            case 5:
-#                print("Exiting...")
-#                quit()
-#            case _:
-#                print("Invalid option! Example input: 1")
 
 
 class App(ctk.CTk):
@@ -358,8 +317,6 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Video Generator")
-        self.geometry(f"{640}x{480}")
-        self.minsize(400, 400)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.configure(fg_color="#1c1917")
@@ -433,16 +390,15 @@ class App(ctk.CTk):
                                                                  command=lambda: self.checkIfImageMagicksIsInstalled())
         check_if_imagemagick_is_installed_button.grid(
             row=12, column=0, padx=(5), pady=(5))
-
         # <----------------- END OF LEFT FRAME ----------------->#
 
         # <----------------- REST OF WINDOW -------------------->#
         button = ctk.CTkButton(self,
                                text="Generate Videos",
-                               text_font=("Helvetica", 10),
-                               fg_color="#047857",
-                               hover_color="#059669",
-                               command=lambda: mainVideoLoop(self.config_data))
+                               text_font=("Helvetica", 12, "bold"),
+                               fg_color="#6d28d9",
+                               hover_color="#7c3aed",
+                               command=lambda: self.generateVideosTopLevel())
         button.grid(row=0, column=1, sticky=ctk.NSEW, padx=5, pady=5)
         # <----------------- REST OF WINDOW ------------------->#
 
@@ -495,7 +451,6 @@ class App(ctk.CTk):
     def checkIfImageMagicksIsInstalled(self):
         window = ctk.CTkToplevel(self)
         window.title("ImageMagick")
-        window.geometry(f"{305}x{100}")
         window.configure(fg_color="#1c1917")
 
         top_label = ctk.CTkLabel(window,
@@ -547,7 +502,7 @@ class App(ctk.CTk):
                                        command=lambda: self.launchImageMagicksInstaller(
                                            window)
                                        )
-        install_button.grid(row=3, column=0, sticky=ctk.W, padx=5)
+        install_button.grid(row=3, column=0, sticky=ctk.W, padx=5, pady=5)
         quit_button = ctk.CTkButton(window,
                                     text="No",
                                     fg_color="#991b1b",
@@ -557,7 +512,25 @@ class App(ctk.CTk):
                                     width=16,
                                     command=lambda: window.destroy()
                                     )
-        quit_button.grid(row=3, column=1, sticky=ctk.E, padx=5)
+        quit_button.grid(row=3, column=0, sticky=ctk.E, padx=5, pady=5)
+
+    def generateVideosTopLevel(self):
+        window = ctk.CTkToplevel(self)
+        window.title("Generating Videos")
+
+        label = ctk.CTkLabel(window,
+                                text="Generating videos",
+                                text_font=("Helvetica", 12, "bold"),
+                                )
+        label.grid(row=0, column=0, padx=(5), pady=(5))
+        self.verifyData(label);
+
+    def verifyData(self, label):
+        """Verify amount of videos to make and pexelsAPI (does 1 request via scrapeVideo's method)"""
+        print("Checking data....")
+        if int(self.config_data['amountOfVideosToMake']) < 1:
+            label.configure(text="Amount of videos to make is less than 1", text_color="red")
+        scrapeVideos(self.data['pexelsAPIKey'])
 
     def launchImageMagicksInstaller(self, window):
         window.destroy()
