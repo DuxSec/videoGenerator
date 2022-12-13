@@ -85,12 +85,9 @@ def usedQuoteToDifferentFile():
 
 
 def getQuote():
-    """Get 1 quote from the text file"""
-    with open('quotes/motivational.txt', 'r+', encoding='utf8') as file:
-        lines = file.readlines()
-        x = lines[0].replace("\n","").replace("-", "\n -")
-        print ("Quote: ", x)
-        return x
+    data = requests.get('https://api.quotable.io/random').json()
+    quote = data['content']
+    return quote
 
 # def makeMp3(data):
 #     """Make mp3 from the quote text, so we know the duration it takes to read"""
