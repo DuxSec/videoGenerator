@@ -87,6 +87,7 @@ def usedQuoteToDifferentFile():
 def getQuote():
     data = requests.get('https://api.quotable.io/random').json()
     quote = data['content']
+    print(f"Quote: {quote}")
     return quote
 
 # def makeMp3(data):
