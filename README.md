@@ -1,7 +1,7 @@
 # [https://vidcrafter.org](https://vidcrafter.org)
 
 
-## Join discord for updates / questions: 
+## Join discord for BETA ACCESS / updates / questions: 
 
 [<img alt="download latest release" width="300px" src="https://i.imgur.com/jSzTTyx.png" />](https://discord.gg/jVB2dRTwxn)
 
