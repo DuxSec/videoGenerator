@@ -1,8 +1,5 @@
 # [https://vidcrafter.org](https://vidcrafter.org)
 
-Introducing an all-in-one video maker and generator for Instagram Reels, YouTube Shorts, and TikTok! This cutting-edge tool not only allows you to create captivating videos accompanied by music, but it also offers automatic upload functionality, making the process completely hassle-free. With its intuitive interface, you can effortlessly produce stunning videos that boast an attention-grabbing intro and visually appealing content. Additionally, this tool provides scheduling capabilities, enabling you to plan and automate video uploads without any user interaction required.
-
-
 ## Join discord for FREE BETA ACCESS / updates / questions: 
 
 [<img alt="download latest release" width="300px" src="https://i.imgur.com/jSzTTyx.png" />](https://discord.gg/jVB2dRTwxn)
