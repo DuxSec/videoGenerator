@@ -5,7 +5,7 @@
 [<img alt="download latest release" width="300px" src="https://i.imgur.com/jSzTTyx.png" />](https://discord.gg/jVB2dRTwxn)
 
 
-## Vidcrafter
+# Vidcrafter
 ![alt text](https://i.imgur.com/VWD0VA4.png)
 
 ## Vidcrafter preview:
