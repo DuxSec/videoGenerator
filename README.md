@@ -8,39 +8,24 @@
 # Vidcrafter
 ![alt text](https://i.imgur.com/VWD0VA4.png)
 
-## Vidcrafter preview:
+## Vidcrafter preview GIF:
 
-![alt text](https://i.imgur.com/zrXfTtl.png)
+![alt text](https://i.imgur.com/x3OqMH8.gif)
 <br>
 <br>
-![alt_text](https://i.imgur.com/IJUUqkQ.png)
+![alt_text](https://i.imgur.com/QrySq7x.gif)
+
 <br>
 <br>
-![alt text](https://i.imgur.com/JJdBd5k.png)
+
+## Vidcrafter preview images:
+![alt text](https://i.imgur.com/yZ5kJcl.png)
 <br>
 <br>
-![alt text](https://i.imgur.com/zeZsTdu.png)
+![alt text](https://i.imgur.com/FNLKyiN.png)
 <br>
 <br>
-![alt text](https://i.imgur.com/JzdbZIH.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/8FfhKw9.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/L8lbXDB.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/vz3FFV6.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/Quid4WJ.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/no5oYc5.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/y7JBc2v.png)
-<br>
-<br>
-![alt text](https://i.imgur.com/gIlRtDa.png)
+![alt text](https://i.imgur.com/LNt2sQ5.png)
+
+
+
